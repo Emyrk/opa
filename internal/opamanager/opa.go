@@ -29,6 +29,49 @@ type OPAManager struct {
 	prepared map[opaQuery]rego.PreparedEvalQuery
 }
 
+func (m *OPAManager) Read(ctx context.Context, path string) (interface{}, error) {
+	txn, err := m.store.NewTransaction(ctx)
+	if err != nil {
+		return nil, xerrors.Errorf("start txn: %w", err)
+	}
+
+	pp, ok := storage.ParsePath(path)
+	if !ok {
+		return nil, xerrors.Errorf("failed parse path")
+	}
+
+	doc, err := m.store.Read(ctx, txn, pp)
+	if err != nil {
+		return nil, xerrors.Errorf("read document: %w", err)
+	}
+
+	err = m.store.Commit(ctx, txn)
+	if err != nil {
+		return nil, xerrors.Errorf("commit txn: %w", err)
+	}
+
+	return doc, nil
+}
+
+func (m *OPAManager) ListPolicies(ctx context.Context) ([]string, error) {
+	txn, err := m.store.NewTransaction(ctx)
+	if err != nil {
+		return nil, xerrors.Errorf("start txn: %w", err)
+	}
+
+	pols, err := m.store.ListPolicies(ctx, txn)
+	if err != nil {
+		return nil, xerrors.Errorf("list policies: %w", err)
+	}
+
+	err = m.store.Commit(ctx, txn)
+	if err != nil {
+		return nil, xerrors.Errorf("commit txn: %w", err)
+	}
+
+	return pols, err
+}
+
 // LoadOPAManager will load all policies and data into memory
 func LoadOPAManager(ctx context.Context, f fs.FS) (*OPAManager, error) {
 	m := new(OPAManager)
@@ -97,7 +140,7 @@ func (m *OPAManager) prepareQueries(ctx context.Context) error {
 		Query   string
 	}{
 		{QueryResourceWorkspace, []string{"data.rbac.resources.workspace.allow"},
-			"allow := data.rbac.resources.workspace.allow; x := 0",
+			"allow := data.rbac.resources.workspace.allow",
 		},
 	}
 

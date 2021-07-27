@@ -1,0 +1,13 @@
+{
+  "actor": {
+    "user": "steven",
+    "op": "read",
+    "roles": ["site-member"]
+  },
+  "object": {
+    "type": "workspace",
+    "owner": "steven",
+    "id": "1234",
+    "shared": []
+  }
+}

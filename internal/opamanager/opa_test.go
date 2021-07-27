@@ -2,6 +2,7 @@ package opamanager_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/cdr/opa/internal/opamanager"
@@ -29,5 +30,7 @@ func TestOPAWorkspace(t *testing.T) {
 			Type:   "workspace",
 		},
 	})
+	fmt.Println(m.ListPolicies(ctx))
+	fmt.Println(m.Read(ctx, "/rbac/roles"))
 	require.NoError(t, err)
 }

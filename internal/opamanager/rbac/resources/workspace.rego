@@ -32,11 +32,11 @@ allow {
     r := roles[_]
 
 	# Perms has actions and objects that it can perform those actions on
-    perms := data.rbac.roles.role_permissions[r][i]
+    perms := data.rbac.roles[r][i]
    	acts := perms.actions
 
 
-    acts.op[actor.op]; perms.object[obj.type]
+    {acts.op[_]}[actor.op]; {perms.object[_]}[obj.type]
 
     forCan(acts.for)
 }
