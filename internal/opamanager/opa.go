@@ -14,6 +14,12 @@ import (
 	"github.com/open-policy-agent/opa/storage/inmem"
 )
 
+// UserRoles is in place of a database, because we don't have one
+var UserRoles = map[string][]string{
+	"admin":  {"site-admin"},
+	"steven": {"site-member"},
+}
+
 // OPAManager will store policies and data in a memory store
 type OPAManager struct {
 	store    storage.Store

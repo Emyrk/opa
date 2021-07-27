@@ -1,7 +1,6 @@
 package rbac.resources.workspace
 
 import data.rbac.roles
-import data.rbac.users
 
 
 forCan(for) {
@@ -27,7 +26,7 @@ allow {
     obj := input.object
 
     # Get the user's roles
-    roles := data.rbac.users.user_roles[actor.user]
+    roles := input.actor.roles
 
     # For each role in the list
     r := roles[_]

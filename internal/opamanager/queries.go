@@ -30,6 +30,8 @@ type AccessResourceInput struct {
 type ActorInput struct {
 	Op   string `json:"op"`
 	User string `json:"user"`
+	// Do not populate roles when making the input...
+	Roles []string `json:"roles"`
 }
 
 type ObjectInput struct {
@@ -40,6 +42,7 @@ type ObjectInput struct {
 }
 
 func (q) CanAccessWorkspace(ctx context.Context, m *OPAManager, input AccessResourceInput) error {
+	input.Actor.Roles = UserRoles[input.Actor.User] // Fix user roles from the lookup table
 	res, err := QueryResourceWorkspace.Query(ctx, m, input)
 	if err != nil {
 		return err
