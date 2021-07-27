@@ -213,8 +213,14 @@ func Policies() *rego.Rego {
 		opts = append(opts, rego.Module(file.Name(), string(module)))
 	}
 
-	opts = append(opts, rego.Query("data.workspace.allow"))
+	opts = append(opts, rego.Query(`
+
+	allow_1 := data.workspace.allow_1
+	allow := data.workspace.allow
+`))
 	opts = append(opts, rego.Imports([]string{"data.workspace"}))
+
 	r := rego.New(opts...)
+
 	return r
 }
