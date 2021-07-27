@@ -45,16 +45,20 @@ func (q) CanAccessWorkspace(ctx context.Context, m *OPAManager, input AccessReso
 		return err
 	}
 
-	if len(res) == 0 {
+	return checkResultSet(res)
+}
+
+func checkResultSet(set rego.ResultSet) error {
+	if len(set) == 0 {
 		return xerrors.Errorf("undefined decision")
 	}
 
 	// Not sure what this is...
-	if len(res) > 1 {
+	if len(set) > 1 {
 		return xerrors.Errorf("got 2 results back for the query")
 	}
 
-	result := res[0]
+	result := set[0]
 	allow, ok := result.Bindings["allow"]
 	if !ok {
 		return xerrors.Errorf("no allow variable set")
