@@ -2,7 +2,6 @@ package opamanager
 
 import (
 	"context"
-	"fmt"
 	"io/fs"
 
 	"golang.org/x/xerrors"
@@ -97,7 +96,7 @@ func (m *OPAManager) prepareQueries(ctx context.Context) error {
 	}
 
 	for _, one := range all {
-		err := m.prepQ(ctx, one.Name, one.Query)
+		err := m.prepQ(ctx, one.Name, one.Query, one.Imports)
 		if err != nil {
 			return xerrors.Errorf("query %q prep: %w", one.Name, err)
 		}
@@ -106,13 +105,9 @@ func (m *OPAManager) prepareQueries(ctx context.Context) error {
 	return nil
 }
 
-func (m *OPAManager) prepQ(ctx context.Context, queryName opaQuery, query string, opts ...rego.PrepareOption) error {
-	txn, _ := m.store.NewTransaction(ctx)
-	ap, _ := m.store.ListPolicies(ctx, txn)
-	fmt.Println(ap)
-
+func (m *OPAManager) prepQ(ctx context.Context, queryName opaQuery, query string, imports []string, opts ...rego.PrepareOption) error {
 	p, err := rego.New(append(m.regoOpts(),
-		rego.Imports([]string{"data.rbac.resources.workspace.allow"}),
+		rego.Imports(imports),
 		rego.Query(query),
 	)...).PrepareForEval(ctx, opts...)
 	if err != nil {

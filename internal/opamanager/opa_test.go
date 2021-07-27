@@ -9,6 +9,7 @@ import (
 )
 
 func TestOPAWorkspace(t *testing.T) {
+
 	var (
 		ctx = context.Background()
 	)
